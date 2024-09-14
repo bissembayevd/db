@@ -1,0 +1,14 @@
+Create database lab_1;
+Create table users(
+    id integer,firstname varchar(50),lastname varchar(50)
+);
+Alter table users add column isadmin integer default 0;
+Alter table users alter column isadmin drop default;
+Alter table users alter column isadmin set data type boolean using isadmin::boolean;
+Alter table users alter column isadmin set default false;
+Alter table users add constraint users_pkey  PRIMARY KEY (id);
+Create table tasks(
+    id integer,name varchar(50),user_id integer
+);
+Drop table tasks;
+Drop database lab_1;
