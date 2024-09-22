@@ -1,0 +1,21 @@
+1.create database lab2;
+2.create table countries(
+    country_id serial primary key ,country_name varchar(30),region_id integer,population integer
+);
+3.insert into countries (country_name, region_id, population) values ('Kazakhstan',04,850000);
+4.insert into countries(country_id,country_name) values (8,'Japan');
+5.insert into countries(country_name,population) values ('China',1400000);
+6.insert into countries(country_name, region_id, population) values
+('Uzbek',10,10000),('Kyrgyz',5,150000),('Russia',9,2000000);
+7.alter table countries alter column country_name set default 'Kazakhstan';
+8.insert into countries (region_id, population) values (3,14214);
+alter table countries alter column region_id set default 12;
+alter table countries alter column population set default 15000000;
+9.insert into countries default values;
+10.create table countries_new (like countries including all);
+11.insert into countries_new select * from countries;
+12.update countries_new set region_id = 1 where region_id is NULL;
+13.update countries_new set population = population + population*0.1 where population>10 returning country_name,population as New_population;
+14.delete from countries where population<100000;
+15.delete from countries_new where country_id in (select country_id from countries) returning *;
+16.delete from countries returning *;
