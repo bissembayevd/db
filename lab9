@@ -1,0 +1,92 @@
+create database lab9;
+create or replace function increase_value(input_value INT)
+returns integer as $$
+begin
+    return input_value + 10;
+end;
+$$ language plpgsql;
+
+create or replace function compare_value(num_1 INT,num_2 INT)
+returns text as $$
+begin
+    if num_1>num_2 then
+         return 'greater';
+    elsif num_1<num_2 then
+         return 'lesser';
+    else
+         return 'equal';
+    end if;
+end;
+$$ language plpgsql;
+
+create or replace function number_series(n integer)
+returns text as $$
+declare
+    series text := '';
+    i integer := 1;
+begin
+    while i <= n loop
+        series := series || i || case when i < n then ', ' else '' end;
+        i := i + 1;
+    end loop;
+    return series;
+end;
+$$ language plpgsql;
+
+create or replace function find_emp(emp_name varchar)
+returns table (emp_id int,name varchar,department varchar,salary decimal) as $$
+begin
+    if emp_name is null then
+        return query select * from employees where false;
+    else
+         return query select * from employees where lower(name) = lower(emp_name);
+    end if;
+end;
+$$ language plpgsql;
+
+create or replace function product_category(category_name varchar)
+returns table (product_id int,product_name varchar,category varchar,price decimal) as $$
+begin
+    if category_name is null then
+        return query select * from products where false;
+    else
+    return query select * from products where lower(category) = lower(category_name);
+    end if;
+end;
+$$ language plpgsql;
+
+create or replace function calculate_bonus(emp_id integer)
+returns decimal as $$
+declare
+    salary decimal;
+    bonus decimal;
+begin
+    select emp_salary into salary from employees where id = emp_id;
+    bonus := salary * 0.10;
+    return bonus;
+end;
+$$ language plpgsql;
+create or replace function update_salary(emp_id integer)
+returns void as $$
+declare
+    bonus decimal;
+begin
+    bonus := calculate_bonus(emp_id);
+    update employees set emp_salary = emp_salary + bonus where id = emp_id;
+end;
+$$ language plpgsql;
+
+create or replace function complex_calculation(num1 integer, str1 varchar)
+returns text as $$
+declare
+    numeric_result integer;
+    string_result text;
+begin
+    numeric_result := num1 * 2;
+
+    string_result := 'you need to train,' || str1;
+
+    return string_result || ' do ' || numeric_result || ' push ups';
+end;
+$$ language plpgsql;
+select complex_calculation(5,'Doctyq');
