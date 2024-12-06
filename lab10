@@ -1,0 +1,88 @@
+create database lab10;
+create table books
+(
+    book_id  int primary key,
+    title    varchar(20),
+    author   varchar(20),
+    price    decimal(4,2),
+    quantity int
+);
+create table orders
+(
+    order_id    serial primary key,
+    book_id     int references books(book_id),
+    customer_id int references customers(customer_id),
+    order_date  date,
+    quantity    int
+);
+create table customers (
+    customer_id int primary key ,
+    name varchar (40),
+    email varchar (30)
+);
+INSERT INTO Books (book_id, title, author, price, quantity) VALUES
+(11, 'Database 101', 'A. Smith', 40.00, 10),
+(12, 'Learn SQL', 'B. Johnson', 35.00, 15),
+(13, 'Advanced DB', 'C. Lee', 50.00, 5);
+INSERT INTO Customers (customer_id, name, email) VALUES
+(101, 'John Doe', 'johndoe@example.com'),
+(102, 'Jane Doe', 'janedoe@example.com');
+
+BEGIN;
+
+INSERT INTO Orders (book_id, customer_id,quantity)
+VALUES (11,101,2);
+
+UPDATE Books
+SET quantity = quantity - 2
+WHERE book_id = 11;
+
+COMMIT;
+
+
+DO $$
+DECLARE
+    current_quantity INT;
+BEGIN
+    SELECT quantity INTO current_quantity
+    FROM Books
+    WHERE book_id = 13;
+
+    IF current_quantity < 10 THEN
+        RAISE EXCEPTION 'Insufficient stock for book_id 13. Available: %, Required: %', current_quantity, 10;
+    END IF;
+
+    INSERT INTO Orders (book_id, customer_id, quantity)
+    VALUES (13, 102, 10);
+
+    UPDATE Books
+    SET quantity = quantity - 10
+    WHERE book_id = 13;
+END;
+$$;
+
+
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+UPDATE Books
+SET price = 39.99
+WHERE book_id = 12;
+COMMIT;
+
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SELECT price
+FROM Books
+WHERE book_id = 12;
+COMMIT;
+
+
+BEGIN;
+UPDATE Customers
+SET email = 'bissembayevd@list.ru'
+WHERE customer_id = 101;
+UPDATE customers SET name = 'Bissembayev Dostyk'
+WHERE customer_id =101;
+COMMIT;
+
+
